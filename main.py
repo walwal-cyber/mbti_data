@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import altair as alt
+import plotly.express as px
 import os
 
 st.set_page_config(page_title="MBTI Distribution Dashboard", layout="wide")
@@ -40,15 +40,10 @@ elif menu == "🌎 전세계 평균":
     avg_distribution = df[mbti_types].mean().reset_index()
     avg_distribution.columns = ["MBTI", "평균"]
 
-    chart = (
-        alt.Chart(avg_distribution)
-        .mark_bar(color="cornflowerblue")
-        .encode(
-            x=alt.X("MBTI", sort="-y"),
-            y="평균"
-        )
-    )
-    st.altair_chart(chart, use_container_width=True)
+    fig = px.bar(avg_distribution, x="MBTI", y="평균", title="전세계 MBTI 평균 분포",
+                 color="MBTI", text="평균")
+    fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
+    st.plotly_chart(fig, use_container_width=True)
 
 elif menu == "🏳️ 국가별 비교":
     st.subheader("🌏 국가별 MBTI 분포 비교")
@@ -57,16 +52,9 @@ elif menu == "🏳️ 국가별 비교":
     if countries:
         selected = df[df["Country"].isin(countries)].melt(id_vars="Country", value_vars=mbti_types,
                                                            var_name="MBTI", value_name="비율")
-        chart = (
-            alt.Chart(selected)
-            .mark_line(point=True)
-            .encode(
-                x="MBTI",
-                y="비율",
-                color="Country"
-            )
-        )
-        st.altair_chart(chart, use_container_width=True)
+        fig = px.line(selected, x="MBTI", y="비율", color="Country", markers=True,
+                      title="선택된 국가들의 MBTI 분포")
+        st.plotly_chart(fig, use_container_width=True)
 
 elif menu == "🏆 Top3 / Bottom3":
     st.subheader("🥇 MBTI 유형별 Top3 / Bottom3 국가")
@@ -77,23 +65,13 @@ elif menu == "🏆 Top3 / Bottom3":
     bottom3 = df.nsmallest(3, selected_mbti)[["Country", selected_mbti]]
 
     st.write("### 🥇 Top 3 국가")
-    chart_top = (
-        alt.Chart(top3)
-        .mark_bar(color="seagreen")
-        .encode(
-            x=alt.X("Country", sort="-y"),
-            y=selected_mbti
-        )
-    )
-    st.altair_chart(chart_top, use_container_width=True)
+    fig_top = px.bar(top3, x="Country", y=selected_mbti, color="Country", text=selected_mbti,
+                     title=f"{selected_mbti} Top 3 국가", color_discrete_sequence=["seagreen"])
+    fig_top.update_traces(texttemplate='%{text:.2f}', textposition='outside')
+    st.plotly_chart(fig_top, use_container_width=True)
 
     st.write("### 🥉 Bottom 3 국가")
-    chart_bottom = (
-        alt.Chart(bottom3)
-        .mark_bar(color="indianred")
-        .encode(
-            x=alt.X("Country", sort="y"),
-            y=selected_mbti
-        )
-    )
-    st.altair_chart(chart_bottom, use_container_width=True)
+    fig_bottom = px.bar(bottom3, x="Country", y=selected_mbti, color="Country", text=selected_mbti,
+                        title=f"{selected_mbti} Bottom 3 국가", color_discrete_sequence=["indianred"])
+    fig_bottom.update_traces(texttemplate='%{text:.2f}', textposition='outside')
+    st.plotly_chart(fig_bottom, use_container_width=True)
