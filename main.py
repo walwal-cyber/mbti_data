@@ -25,7 +25,7 @@ def page_1():
         st.session_state.page = 'page_2'
         st.session_state.password_input = "" # 비밀번호 입력 초기화
         st.session_state.error_message = "" # 오류 메시지 초기화
-        st.experimental_rerun() # 화면을 다시 로드하여 페이지 전환
+        st.rerun() # ✅ st.experimental_rerun() 대신 st.rerun() 사용
 
     # 화면에 도움될 만한 이미지 첨부 (ATM 기계나 생일 케이크 등)
     # 
@@ -74,7 +74,7 @@ def handle_keypad_input(key):
         st.session_state.error_message = "" # 새로운 입력이 들어오면 에러 메시지 초기화
     
     # 입력 후 화면 갱신
-    st.experimental_rerun()
+    st.rerun() # ✅ st.experimental_rerun() 대신 st.rerun() 사용
 
 # 비밀번호 확인 함수
 def check_password():
@@ -100,7 +100,7 @@ def page_3():
     # '처음으로' 버튼 (선택 사항)
     if st.button("처음 화면으로 돌아가기", key="home_btn", use_container_width=True):
         st.session_state.page = 'page_1'
-        st.experimental_rerun()
+        st.rerun() # ✅ st.experimental_rerun() 대신 st.rerun() 사용
 
 
 # --- 🗺️ 페이지 라우팅 ---
