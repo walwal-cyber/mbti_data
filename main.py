@@ -13,17 +13,24 @@ def inject_custom_css():
             width: 100%;
             height: 70px; /* 버튼 높이를 키워서 누르기 쉽게 조정 */
             font-size: 24px;
+            margin-bottom: 5px; /* 버튼 사이에 약간의 간격 추가 */
         }
         
-        /* st.columns가 모바일에서 1열로 자동 전환되는 것을 방지 */
-        @media (max-width: 768px) {
-            /* stColumns의 내부 div(각 컬럼)에 고정된 너비를 주고 플렉스 속성 조정 */
-            .stColumns > div {
-                min-width: calc(33.33% - 10px); /* 3개 컬럼 너비 강제 */
-            }
-            .stColumns {
-                flex-wrap: nowrap !important; /* 컬럼이 다음 줄로 넘어가지 않도록 강제 */
-            }
+        /* st.columns (넘버패드 컨테이너)에 대한 스타일 강제 적용 */
+        div[data-testid="stColumns"] {
+            display: flex;
+            flex-direction: row; /* 반드시 가로로 배열 */
+            flex-wrap: wrap; 
+            justify-content: space-between;
+            gap: 10px; /* 컬럼 간 간격 */
+        }
+        
+        /* 각 컬럼 요소 (넘버패드 버튼 컨테이너)에 대한 스타일 강제 적용 */
+        div[data-testid="stColumns"] > div {
+            flex-grow: 0;
+            flex-shrink: 0;
+            flex-basis: calc(33.33% - 7px); /* 3개 컬럼 너비 강제 (gap 고려하여 조정) */
+            min-width: 90px; /* 최소 너비 지정 */
         }
 
         /* 비밀번호 표시창 스타일 */
@@ -38,6 +45,7 @@ def inject_custom_css():
         }
         </style>
         """, unsafe_allow_html=True)
+
 
 # --- ⚙️ 초기 설정 ---
 # 페이지 제목 및 세션 상태 초기화
