@@ -13,7 +13,6 @@ if 'page' not in st.session_state:
     st.session_state.password_input = ""
     st.session_state.error_message = ""
 
-
 # --- 1️⃣ 첫 번째 화면: 축하 메시지 및 출금 버튼 ---
 def page_1():
     """첫 번째 화면: 축하 메시지와 출금 버튼"""
@@ -25,10 +24,7 @@ def page_1():
         st.session_state.page = 'page_2'
         st.session_state.password_input = "" # 비밀번호 입력 초기화
         st.session_state.error_message = "" # 오류 메시지 초기화
-        st.rerun() # ✅ st.experimental_rerun() 대신 st.rerun() 사용
-
-    # 화면에 도움될 만한 이미지 첨부 (ATM 기계나 생일 케이크 등)
-    # 
+        st.rerun()
 
 # --- 2️⃣ 두 번째 화면: 비밀번호 입력 ---
 def page_2():
@@ -36,9 +32,19 @@ def page_2():
     st.markdown("<h2 style='text-align: center;'>🔐 비밀번호를 입력하십시오</h2>", unsafe_allow_html=True)
     st.markdown("---")
 
-    # 입력된 비밀번호를 '*'로 가려서 보여줌
-    password_display = "*" * len(st.session_state.password_input)
-    st.text_input("비밀번호", value=password_display, key="display", disabled=True)
+    # **수정 사항 1: 입력된 비밀번호를 검은색 동그라미로 표시**
+    # CSS를 사용하여 글꼴 크기를 키우고 동그라미 모양으로 보이게 합니다.
+    # U+25CF (●) 검은색 동그라미 문자를 사용합니다.
+    password_display = "●" * len(st.session_state.password_input)
+    
+    st.markdown(
+        f"""
+        <div style="text-align: center; font-size: 40px; border: 2px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+            {password_display}
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     # 에러 메시지가 있으면 표시
     if st.session_state.error_message:
@@ -47,7 +53,7 @@ def page_2():
     # 넘버 패드 레이아웃 (3x3+1)
     col1, col2, col3 = st.columns(3)
     
-    # 넘버 패드 버튼 정의: 숫자, 백스페이스, 엔터
+    # 넘버 패드 버튼 정의: 숫자, 클리어, 엔터
     buttons = [
         ('7', col1), ('8', col2), ('9', col3),
         ('4', col1), ('5', col2), ('6', col3),
@@ -56,10 +62,10 @@ def page_2():
     ]
     
     for label, col in buttons:
-        if col.button(label, key=f"keypad_{label}", use_container_width=True):
-            handle_keypad_input(label)
+        # 버튼 스타일을 조정하여 더 잘 보이게 할 수 있습니다. (예: font-size)
+        col.button(label, key=f"keypad_{label}", use_container_width=True, on_click=handle_keypad_input, args=(label,))
 
-# 넘버 패드 입력 처리 함수
+# 넘버 패드 입력 처리 함수 (on_click 인자로 넘겨줄 수 있도록 수정)
 def handle_keypad_input(key):
     # 'C'는 초기화 (Clear)
     if key == 'C':
@@ -73,8 +79,9 @@ def handle_keypad_input(key):
         st.session_state.password_input += key
         st.session_state.error_message = "" # 새로운 입력이 들어오면 에러 메시지 초기화
     
-    # 입력 후 화면 갱신
-    st.rerun() # ✅ st.experimental_rerun() 대신 st.rerun() 사용
+    # 입력 후 화면 갱신 (on_click을 사용하면 함수가 실행된 후 자동으로 rerun되므로, 명시적인 st.rerun()은 생략 가능하나, 
+    # Streamlit이 버튼 클릭 외의 세션 상태 변경을 감지하도록 명시적으로 유지하는 것이 안전합니다.)
+    st.rerun()
 
 # 비밀번호 확인 함수
 def check_password():
@@ -97,10 +104,8 @@ def page_3():
     
     st.subheader("용돈 인출 중...")
     
-    # '처음으로' 버튼 (선택 사항)
-    if st.button("처음 화면으로 돌아가기", key="home_btn", use_container_width=True):
-        st.session_state.page = 'page_1'
-        st.rerun() # ✅ st.experimental_rerun() 대신 st.rerun() 사용
+    # **수정 사항 2: '처음 화면으로 돌아가기' 버튼 제거**
+    # 해당 버튼 코드를 제거했습니다.
 
 
 # --- 🗺️ 페이지 라우팅 ---
